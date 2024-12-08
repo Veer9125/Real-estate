@@ -17,6 +17,8 @@ mongoose.connect(process.env.DATABASE_URL).then(()=>{
 
 const app = express();
 
+app.use(express.json());
+
 app.listen(5000, ()=>{
     console.log('server is running successfully on port 5000');
 })

@@ -21,6 +21,19 @@ export const signup = async (req, res, next) => {
   }
 };
 
+
+//make sigin function to authenticate user data.
+//when user submit credentials(email, password) it comes through req.body then we destructured it 
+//and then we perform authenticity using try and catch function.
+//In try function We find user is exist or not using Usrmodel and its method fingOne.
+//If user found then OK, but if used does'nt find then return error.
+//similarly for password authenticity using bcriptjs and its method called compareSync which is used to compare
+// findOne password and and req password.
+//Now we create jwt token because after once signin by user whenever user requests to server,
+//  Do not sign him in repeatedly, So when first time user signin after authenication jwt token generate
+//and after generate it store in cookie which is stored in browser which is using by user
+//whenever user request to server cookie automatically sent it to server and server verify it using signature
+//in signature jwtsecret or secret key stored after verification server processing the request of user
 export const signin = async (req, res, next) => {
   const { username, email, password } = req.body;
   try {

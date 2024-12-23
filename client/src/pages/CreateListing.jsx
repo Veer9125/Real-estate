@@ -121,9 +121,6 @@ function CreateListing() {
               accept="image/*"
               multiple
             />
-            <button className="p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80">
-              Upload
-            </button>
           </div>
         <button className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">Create Listing</button>
         </div>

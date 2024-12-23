@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   updateUserStart,
@@ -20,32 +20,60 @@ function Profile() {
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
   const [updateSuccess, setUpdateSuccess] = useState(false);
-
+  const [file, setFile] = useState(undefined);
+  const [fileUploadError1, setFileUploadError1] = useState(false);
+  const [fileUploadsuccess, setFileUploadsuccess] = useState(false);
+  
+  // -------------------------------------------------------------------------------------------------
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+  
+  // -------------------------------------------------------------------------------------------------
+    
+    useEffect(()=> {
+      if(file){
+        handleFileUpload(file);
+      }
+    }, [file]);
+    
+    
+  // -------------------------------------------------------------------------------------------------
+  
+    const handleFileUpload = async (file)=> {
+      if(!file) return;
+      const max_file_size = 2 * 1024 * 1024;
+      if (file.size > max_file_size) {
+        setFileUploadError1(true);
+        setFileUploadsuccess(false);
+        return
+      }
+      try{
+        const data = new FormData();
+        data.append("file", file);
+        data.append("upload_preset", "First_time_using_cloudinary");
+        data.append("cloud_name", "dh6gqc9xj");
+    
+        const res = await fetch("https://api.cloudinary.com/v1_1/dh6gqc9xj/image/upload", {
+          method: "POST",
+          body: data
+        })
+    
+        const uploadImageUrl = await res.json();
+        setFormData({...formData, avatar: uploadImageUrl.url})
+        setFileUploadsuccess(true);
+        setFileUploadError1(false);
+  
+      }catch (error){
+        console.log(error.message);
+        setFileUploadsuccess(false);
+        
+      } 
+    }
+  
+// -------------------------------------------------------------------------------------------------
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     dispatch(updateUserStart());
-  //     const res = await fetch(`/api/auth/update/${currentUser._id}`, {
-  //       method: "POST",
-  //       headers: {
-  //          'Content-Type': 'application/json'
-  //         },
-  //       body: JSON.stringify(formData),
-  //     });
-  //     const data = await res.json();
-  //     if (data.success === false) {
-  //       dispatch(updateUserFailure(data.message));
-  //       return;
-  //     }
-  //     dispatch(updateUserSuccess(data));
-  //   } catch (error) {
-  //     dispatch(updateUserFailure(error.message));
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(currentUser._id);
@@ -72,6 +100,8 @@ function Profile() {
     }
   };
 
+// -------------------------------------------------------------------------------------------------
+
   const handleDeleteUser = async (e) => {
     try {
       dispatch(deleteUserStart());
@@ -88,6 +118,8 @@ function Profile() {
       dispatch(deleteUserFailure(error.message));
     }
   };
+
+// -------------------------------------------------------------------------------------------------
 
   const handleSignOut = async (e) => {
     try {
@@ -108,13 +140,24 @@ function Profile() {
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input type="file" ref={fileRef} hidden accept="image/*" />
+        <input
+         onChange={(e)=> setFile(e.target.files[0])}
+         type="file"
+         ref={fileRef}
+         hidden
+         accept="image/*" />
         <img
           onClick={() => fileRef.current.click()}
-          src={currentUser.avatar}
+          src={formData.avatar || currentUser.avatar}
           alt="Profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
+        <p className=" text-red-500 text-sm self-center">
+          {fileUploadError1 ? <span>Error Occured During Image Upload!(Image size must be less than 2mb)</span> : ""}
+        </p>
+        <p className=" text-green-500 text-sm self-center">
+          {fileUploadsuccess ? <span>Image Uploaded Successfully!</span> : ""}
+        </p>
         <input
           type="text"
           onChange={handleChange}

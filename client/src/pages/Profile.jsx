@@ -23,56 +23,56 @@ function Profile() {
   const [file, setFile] = useState(undefined);
   const [fileUploadError1, setFileUploadError1] = useState(false);
   const [fileUploadsuccess, setFileUploadsuccess] = useState(false);
-  
+
   // -------------------------------------------------------------------------------------------------
-  
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
-  
+
   // -------------------------------------------------------------------------------------------------
-    
-    useEffect(()=> {
-      if(file){
-        handleFileUpload(file);
-      }
-    }, [file]);
-    
-    
-  // -------------------------------------------------------------------------------------------------
-  
-    const handleFileUpload = async (file)=> {
-      if(!file) return;
-      const max_file_size = 2 * 1024 * 1024;
-      if (file.size > max_file_size) {
-        setFileUploadError1(true);
-        setFileUploadsuccess(false);
-        return
-      }
-      try{
-        const data = new FormData();
-        data.append("file", file);
-        data.append("upload_preset", "First_time_using_cloudinary");
-        data.append("cloud_name", "dh6gqc9xj");
-    
-        const res = await fetch("https://api.cloudinary.com/v1_1/dh6gqc9xj/image/upload", {
-          method: "POST",
-          body: data
-        })
-    
-        const uploadImageUrl = await res.json();
-        setFormData({...formData, avatar: uploadImageUrl.url})
-        setFileUploadsuccess(true);
-        setFileUploadError1(false);
-  
-      }catch (error){
-        console.log(error.message);
-        setFileUploadsuccess(false);
-        
-      } 
+
+  useEffect(() => {
+    if (file) {
+      handleFileUpload(file);
     }
-  
-// -------------------------------------------------------------------------------------------------
+  }, [file]);
+
+  // -------------------------------------------------------------------------------------------------
+
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+    const max_file_size = 2 * 1024 * 1024;
+    if (file.size > max_file_size) {
+      setFileUploadError1(true);
+      setFileUploadsuccess(false);
+      return;
+    }
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      data.append("upload_preset", "First_time_using_cloudinary");
+      data.append("cloud_name", "dh6gqc9xj");
+
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dh6gqc9xj/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
+
+      const uploadImageUrl = await res.json();
+      setFormData({ ...formData, avatar: uploadImageUrl.url });
+      setFileUploadsuccess(true);
+      setFileUploadError1(false);
+    } catch (error) {
+      console.log(error.message);
+      setFileUploadsuccess(false);
+    }
+  };
+
+  // -------------------------------------------------------------------------------------------------
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -100,7 +100,7 @@ function Profile() {
     }
   };
 
-// -------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------
 
   const handleDeleteUser = async (e) => {
     try {
@@ -119,7 +119,7 @@ function Profile() {
     }
   };
 
-// -------------------------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------------------------
 
   const handleSignOut = async (e) => {
     try {
@@ -141,11 +141,12 @@ function Profile() {
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
-         onChange={(e)=> setFile(e.target.files[0])}
-         type="file"
-         ref={fileRef}
-         hidden
-         accept="image/*" />
+          onChange={(e) => setFile(e.target.files[0])}
+          type="file"
+          ref={fileRef}
+          hidden
+          accept="image/*"
+        />
         <img
           onClick={() => fileRef.current.click()}
           src={formData.avatar || currentUser.avatar}
@@ -153,7 +154,14 @@ function Profile() {
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
         <p className=" text-red-500 text-sm self-center">
-          {fileUploadError1 ? <span>Error Occured During Image Upload!(Image size must be less than 2mb)</span> : ""}
+          {fileUploadError1 ? (
+            <span>
+              Error Occured During Image Upload!(Image size must be less than
+              2mb)
+            </span>
+          ) : (
+            ""
+          )}
         </p>
         <p className=" text-green-500 text-sm self-center">
           {fileUploadsuccess ? <span>Image Uploaded Successfully!</span> : ""}
